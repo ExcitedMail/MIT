@@ -5,6 +5,7 @@ import numpy as np
 class part_struct:
 	def __init__(self):
 		self.part = ['']*len(utils.PARTS)
+		self.partname = ['']*(len(utils.PARTS)//2)
 		self.special = False
 		self.mode89 = False
 class baka_struct:

@@ -10,6 +10,7 @@ import utils
 import glob
 import os
 import json
+import base64
 from tqdm import trange
 from random import randint
 
@@ -67,6 +68,11 @@ def produce_image(current_image, current_part, prev_part):
 		current_image[:] = (b, g, r)
 		image_for_hash = np.zeros((utils.HEIGHT, utils.WIDTH, 3), np.uint8)
 
+		def get_name(fullname):
+			result = fullname.split('/')[-1]
+			result = result[:-4]
+			return result
+
 
 		# get random file parts if body special
 		if(current_part.special):
@@ -75,12 +81,14 @@ def produce_image(current_image, current_part, prev_part):
 			rand_num = randint(0, len(special_files[0])-1)
 			part = cv.imread(special_files[0][rand_num], cv.IMREAD_UNCHANGED)
 			current_part.part[1] = special_files[0][rand_num]
+			current_part.partname[0] = get_name(special_files[0][rand_num])
 			current_image = cvzone.overlayPNG(current_image, part, [0, 0])
 			image_for_hash = cvzone.overlayPNG(image_for_hash, part, [0, 0])
 			
 			# get transparent hand
 			part = cv.imread(special_files[1][0], cv.IMREAD_UNCHANGED)
 			current_part.part[9] = special_files[1][0]
+			current_part.partname[4] = get_name(special_files[1][0])
 			current_image = cvzone.overlayPNG(current_image, part, [0, 0])
 			image_for_hash = cvzone.overlayPNG(image_for_hash, part, [0, 0])
 		elif(current_part.mode89):
@@ -99,6 +107,7 @@ def produce_image(current_image, current_part, prev_part):
 					rand_num = randint(0, len(basic_files[i])-1)
 				part = cv.imread(basic_files[i][rand_num], cv.IMREAD_UNCHANGED)
 				current_part.part[i] = basic_files[i][rand_num]
+				current_part.partname[i//2] = get_name(basic_files[i][rand_num])
 			# print(i, current_part.part[i])
 			current_image = cvzone.overlayPNG(current_image, part, [0, 0])
 			image_for_hash = cvzone.overlayPNG(image_for_hash, part, [0, 0])
@@ -118,24 +127,101 @@ def produce_image(current_image, current_part, prev_part):
 
 	return current_image, current_part
 
-		
+
 def pack_to_json(current_num, current_baka):
 	# name, id: name or hash, description: maybe fix string, url_ipfs: remain empty, base64: img to base64, part attribute
+	
+	def generate_base64(img):
+		img_encode = cv.imencode('.png', img)[1]
+		result = base64.b64encode(img_encode)
+		return result
+	
 	d_1 = {
-		'name' : utils.PROJ_NAME + format(current_num, '03d') + 'A',
-		'base64': '',
-		'url_mongo': '',
-		'url_iftp': '',
+		'description': 'This is John. He is from Taiwan.',
+		'external_url': '',
+		'image': '',	# ipfs url
+		'image_data': generate_base64(current_baka.image1).decode('utf-8'),	# encode by cv2, decode to str for json
+		'name' : 'JOHN #' + format(current_num, '03d'),
+		'attributes': [
+			{
+				'trait_type': 'body', 
+				'value': current_baka.type1.partname[0],
+			},
+			{
+				'trait_type': 'expression', 
+				'value': current_baka.type1.partname[1],
+			},
+			{
+				'trait_type': 'hair', 
+				'value': current_baka.type1.partname[2],
+			},
+			{
+				'trait_type': 'eye', 
+				'value': current_baka.type1.partname[3],
+			},
+			{
+				'trait_type': 'hand', 
+				'value': current_baka.type1.partname[4],
+			},
+		],
 	}
 	d_2 = {
-		'name' : utils.PROJ_NAME + format(current_num, '03d') + 'B',
-		'url_mongo': '',
-		'url_iftp': '',
+		'description': 'This is John. He is mad.',
+		'external_url': '',
+		'image': '',	# ipfs url
+		'image_data': generate_base64(current_baka.image2).decode('utf-8'),
+		'name' : 'JOHN #' + format(current_num, '03d'),
+		'attributes': [
+			{
+				'trait_type': 'body', 
+				'value': current_baka.type2.partname[0],
+			},
+			{
+				'trait_type': 'expression', 
+				'value': current_baka.type2.partname[1],
+			},
+			{
+				'trait_type': 'hair', 
+				'value': current_baka.type2.partname[2],
+			},
+			{
+				'trait_type': 'eye', 
+				'value': current_baka.type2.partname[3],
+			},
+			{
+				'trait_type': 'hand', 
+				'value': current_baka.type2.partname[4],
+			},
+		],
 	}
 	d_3 = {
-		'name' : utils.PROJ_NAME + format(current_num, '03d') + 'C',
-		'url_mongo': '',
-		'url_iftp': '',
+		'description': 'This is BAKJOHN!',
+		'external_url': '',
+		'image': '',	# ipfs url
+		'image_data': generate_base64(current_baka.image3).decode('utf-8'),
+		'name' : 'BAKAJOHN #' + format(current_num, '03d'),
+		'attributes': [
+			{
+				'trait_type': 'body', 
+				'value': current_baka.type3.partname[0],
+			},
+			{
+				'trait_type': 'expression', 
+				'value': current_baka.type3.partname[1],
+			},
+			{
+				'trait_type': 'hair', 
+				'value': current_baka.type3.partname[2],
+			},
+			{
+				'trait_type': 'eye', 
+				'value': current_baka.type3.partname[3],
+			},
+			{
+				'trait_type': 'hand', 
+				'value': current_baka.type3.partname[4],
+			},
+		],
 	}
 	return d_1, d_2, d_3
 
@@ -153,7 +239,9 @@ for num_img in trange(utils.NUM_DISTRIB):
 
 	baka[num_img].typePrev = copy.deepcopy(baka[num_img].type1)
 	baka[num_img].type2.part[0] = baka[num_img].type1.part[1]
-	baka[num_img].type2.part[8] =  baka[num_img].type1.part[9]
+	baka[num_img].type2.part[8] = baka[num_img].type1.part[9]
+	baka[num_img].type2.partname[0] = baka[num_img].type1.partname[0]
+	baka[num_img].type2.partname[4] = baka[num_img].type1.partname[4]	
 	baka[num_img].type2.mode89 = True
 	baka[num_img].image2, baka[num_img].type2 = produce_image(baka[num_img].image2, baka[num_img].type2, baka[num_img].typePrev)
 	cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
@@ -163,18 +251,26 @@ for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].type3.part[2] = baka[num_img].type2.part[2]
 	baka[num_img].type3.part[4] = baka[num_img].type2.part[4]
 	baka[num_img].type3.part[6] = baka[num_img].type2.part[6]
+	baka[num_img].type3.partname[1] = baka[num_img].type2.partname[1]
+	baka[num_img].type3.partname[2] = baka[num_img].type2.partname[2]
+	baka[num_img].type3.partname[3] = baka[num_img].type2.partname[3]
 	# baka[num_img].type3.special = False
 	baka[num_img].type3.mode89 = True
 	baka[num_img].image3, baka[num_img].type3 = produce_image(baka[num_img].image3, baka[num_img].type3, baka[num_img].typePrev)
 	cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
 	# cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
+	
+	# print(baka[num_img].type1.partname)
+	# print(baka[num_img].type2.partname)
+	# print(baka[num_img].type3.partname)
 
 	dic = pack_to_json(num_img, baka[num_img])
 	# Serializing json
 	json_list = [0]*3
+	num_to_word = ['A', 'B', 'C']
 	for i in range(3):
 		json_list[i] = json.dumps(dic[i], indent=4)
 		
 		# Writing to sample.json
-		with open(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + format(i, '01d'), 'w') as outfile:
+		with open(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + num_to_word[i], 'w') as outfile:
 			outfile.write(json_list[i])
