@@ -234,8 +234,8 @@ print('baka init finish.')
 
 for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].image1, baka[num_img].type1 = produce_image(baka[num_img].image1, baka[num_img].type1, baka[num_img].typePrev)
-	cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
-	# cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
+	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
+	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
 
 	baka[num_img].typePrev = copy.deepcopy(baka[num_img].type1)
 	baka[num_img].type2.part[0] = baka[num_img].type1.part[1]
@@ -244,8 +244,8 @@ for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].type2.partname[4] = baka[num_img].type1.partname[4]	
 	baka[num_img].type2.mode89 = True
 	baka[num_img].image2, baka[num_img].type2 = produce_image(baka[num_img].image2, baka[num_img].type2, baka[num_img].typePrev)
-	cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
-	# cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
+	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
+	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
 	
 	baka[num_img].typePrev = copy.deepcopy(baka[num_img].type2)
 	baka[num_img].type3.part[2] = baka[num_img].type2.part[2]
@@ -257,8 +257,8 @@ for num_img in trange(utils.NUM_DISTRIB):
 	# baka[num_img].type3.special = False
 	baka[num_img].type3.mode89 = True
 	baka[num_img].image3, baka[num_img].type3 = produce_image(baka[num_img].image3, baka[num_img].type3, baka[num_img].typePrev)
-	cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
-	# cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
+	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
+	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
 	
 	# print(baka[num_img].type1.partname)
 	# print(baka[num_img].type2.partname)
