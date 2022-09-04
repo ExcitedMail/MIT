@@ -14,7 +14,7 @@ for file in onlyfiles:
     with open(file, 'r') as json_file:
         data = json.load(json_file)
         num = data['name'][-3:]
-        data['image'] = "https://ipfs.io/ipfs/QmcatcXYNN7Vqsnf4aUBDRxo5QyReSvKKVfLESAz3jJ3Hn/John #" + num + ".json"
+        data['image'] = "https://ipfs.io/ipfs/QmS83ES9NEpqsAQxx6cAA1VK4JeLEmTndHs49sCy3bu1i2/BAKAJOHN#" + num + "A.png"
         print(data['image'])
 
     with open(file, 'w') as json_file:

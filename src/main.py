@@ -139,7 +139,7 @@ def pack_to_json(current_num, current_baka):
 	d_1 = {
 		'description': 'This is John. He is from Taiwan.',
 		'external_url': '',
-		'image': '',	# ipfs url
+		'image': 'https://ipfs.io/ipfs/QmcatcXYNN7Vqsnf4aUBDRxo5QyReSvKKVfLESAz3jJ3Hn/BAKAJOHN#' + format(current_num, '03d') + '.png',	# ipfs url
 		'image_data': generate_base64(current_baka.image1).decode('utf-8'),	# encode by cv2, decode to str for json
 		'name' : 'JOHN #' + format(current_num, '03d'),
 		'attributes': [
@@ -168,7 +168,7 @@ def pack_to_json(current_num, current_baka):
 	d_2 = {
 		'description': 'This is John. He is mad.',
 		'external_url': '',
-		'image': '',	# ipfs url
+		'image': 'https://ipfs.io/ipfs/QmPmS1ve1hZxuZdCQdT71kDRDwuW7aCCwjLAYc6hXDSkzN/BAKAJOHN#' + format(current_num, '03d') + '.png',	# ipfs url
 		'image_data': generate_base64(current_baka.image2).decode('utf-8'),
 		'name' : 'JOHN #' + format(current_num, '03d'),
 		'attributes': [
@@ -197,7 +197,7 @@ def pack_to_json(current_num, current_baka):
 	d_3 = {
 		'description': 'This is BAKJOHN!',
 		'external_url': '',
-		'image': '',	# ipfs url
+		'image': 'https://ipfs.io/ipfs/QmSo5gd2kYyGTwybtrDu8ipfAzcuPhTbKhy6QwCxz7NgeU/BAKAJOHN#'+ format(current_num, '03d') +'.png',	# ipfs url
 		'image_data': generate_base64(current_baka.image3).decode('utf-8'),
 		'name' : 'BAKAJOHN #' + format(current_num, '03d'),
 		'attributes': [
@@ -235,7 +235,7 @@ print('baka init finish.')
 for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].image1, baka[num_img].type1 = produce_image(baka[num_img].image1, baka[num_img].type1, baka[num_img].typePrev)
 	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
-	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
+	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + 'A' + utils.OUTPUT_IMGTYPE, baka[num_img].image1)
 
 	baka[num_img].typePrev = copy.deepcopy(baka[num_img].type1)
 	baka[num_img].type2.part[0] = baka[num_img].type1.part[1]
@@ -245,7 +245,7 @@ for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].type2.mode89 = True
 	baka[num_img].image2, baka[num_img].type2 = produce_image(baka[num_img].image2, baka[num_img].type2, baka[num_img].typePrev)
 	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
-	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
+	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
 	
 	baka[num_img].typePrev = copy.deepcopy(baka[num_img].type2)
 	baka[num_img].type3.part[2] = baka[num_img].type2.part[2]
@@ -258,7 +258,7 @@ for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].type3.mode89 = True
 	baka[num_img].image3, baka[num_img].type3 = produce_image(baka[num_img].image3, baka[num_img].type3, baka[num_img].typePrev)
 	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
-	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + '/C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
+	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
 	
 	# print(baka[num_img].type1.partname)
 	# print(baka[num_img].type2.partname)
@@ -272,5 +272,5 @@ for num_img in trange(utils.NUM_DISTRIB):
 		json_list[i] = json.dumps(dic[i], indent=4)
 		
 		# Writing to sample.json
-		with open(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + num_to_word[i], 'w') as outfile:
+		with open(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + num_to_word[i] + '.json', 'w') as outfile:
 			outfile.write(json_list[i])
