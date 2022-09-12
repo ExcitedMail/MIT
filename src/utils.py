@@ -1,4 +1,4 @@
-PARTS = ['body/8+9/', 'body/NO8+9/', 'expression/8+9/', 'expression/NO8+9/', 'hair/8+9/', 'hair/NO8+9/', 'eye/8+9/', 'eye/NO8+9/', 'hand/8+9/', 'hand/NO8+9/']
+PARTS = ['body/8+9/', 'body/NO8+9/', 'expression/8+9/', 'expression/NO8+9/', 'hair/8+9/', 'hair/NO8+9/', 'eye/8+9/', 'eye/NO8+9/', 'hand/8+9/', 'hand/NO8+9/', 'background/']
 SPECIAL_PARTS = ['special edition/body/', 'special edition/hand/']
 HEIGHT = 1415
 WIDTH = 1280

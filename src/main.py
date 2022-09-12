@@ -36,6 +36,7 @@ for subDir in utils.PARTS:
 	subfiles = list(filter(os.path.isfile, glob.glob(utils.SEARCH_DIR + subDir + "*")))
 	subfiles.sort(key=lambda x: os.path.getmtime(x))
 	basic_files.append(subfiles)
+	# print(subfiles)
 
 #special parts
 for subDir in utils.SPECIAL_PARTS:
@@ -60,10 +61,14 @@ def produce_image(current_image, current_part, prev_part):
 		# set if body is special
 		if(current_part.mode89 == False and randint(0, 10) < 2):
 			# print('special!!')
-			current_part.special = True
-		else:
-			current_part.special = False
-	
+			current_part.special_body = True
+
+		# set if background is special
+		if(current_part.mode89 == True and randint(0, 10) < 3):
+			# print('background special!!')
+			current_part.special_background = True
+
+		# set background color (pure color)	
 		b, g, r = randint(0, 256), randint(0, 256), randint(0, 256)
 		current_image[:] = (b, g, r)
 		image_for_hash = np.zeros((utils.HEIGHT, utils.WIDTH, 3), np.uint8)
@@ -75,7 +80,7 @@ def produce_image(current_image, current_part, prev_part):
 
 
 		# get random file parts if body special
-		if(current_part.special):
+		if(current_part.special_body):
 			current_index = [1, 3, 5, 7, 9]
 			# choose body			
 			rand_num = randint(0, len(special_files[0])-1)
@@ -96,6 +101,10 @@ def produce_image(current_image, current_part, prev_part):
 		else:
 			current_index = [1, 3, 5, 7, 9]
 
+		# add background image
+		if(current_part.special_background == True):
+			current_index.insert(0, 10)
+
 		# set else parts
 		for i in current_index:
 			if(current_part.part[i] != ''):
@@ -109,6 +118,10 @@ def produce_image(current_image, current_part, prev_part):
 				current_part.part[i] = basic_files[i][rand_num]
 				current_part.partname[i//2] = get_name(basic_files[i][rand_num])
 			# print(i, current_part.part[i])
+			if(len(part.shape) == 3):
+				part = cv.cvtColor(part, cv.COLOR_RGB2RGBA)
+			elif(len(part.shape) < 3):
+				part = cv.cvtColor(part, cv.COLOR_GRAY2RGBA)
 			current_image = cvzone.overlayPNG(current_image, part, [0, 0])
 			image_for_hash = cvzone.overlayPNG(image_for_hash, part, [0, 0])
 		
@@ -132,6 +145,7 @@ def pack_to_json(current_num, current_baka):
 	# name, id: name or hash, description: maybe fix string, url_ipfs: remain empty, base64: img to base64, part attribute
 	
 	def generate_base64(img):
+		img = cv.resize(img, (utils.HEIGHT//2, utils.WIDTH//2), interpolation=cv.INTER_AREA)
 		img_encode = cv.imencode('.png', img)[1]
 		result = base64.b64encode(img_encode)
 		return result
@@ -142,7 +156,12 @@ def pack_to_json(current_num, current_baka):
 		'image': 'https://ipfs.io/ipfs/QmcatcXYNN7Vqsnf4aUBDRxo5QyReSvKKVfLESAz3jJ3Hn/BAKAJOHN#' + format(current_num, '03d') + '.png',	# ipfs url
 		'image_data': generate_base64(current_baka.image1).decode('utf-8'),	# encode by cv2, decode to str for json
 		'name' : 'JOHN #' + format(current_num, '03d'),
+		'number' : current_num * 3,
 		'attributes': [
+			{
+				'trait_type': 'background', 
+				'value': current_baka.type3.partname[5],
+			},
 			{
 				'trait_type': 'body', 
 				'value': current_baka.type1.partname[0],
@@ -171,7 +190,12 @@ def pack_to_json(current_num, current_baka):
 		'image': 'https://ipfs.io/ipfs/QmPmS1ve1hZxuZdCQdT71kDRDwuW7aCCwjLAYc6hXDSkzN/BAKAJOHN#' + format(current_num, '03d') + '.png',	# ipfs url
 		'image_data': generate_base64(current_baka.image2).decode('utf-8'),
 		'name' : 'JOHN #' + format(current_num, '03d'),
+		'number' : current_num * 3 + 1,
 		'attributes': [
+			{
+				'trait_type': 'background', 
+				'value': current_baka.type3.partname[5],
+			},
 			{
 				'trait_type': 'body', 
 				'value': current_baka.type2.partname[0],
@@ -200,7 +224,12 @@ def pack_to_json(current_num, current_baka):
 		'image': 'https://ipfs.io/ipfs/QmSo5gd2kYyGTwybtrDu8ipfAzcuPhTbKhy6QwCxz7NgeU/BAKAJOHN#'+ format(current_num, '03d') +'.png',	# ipfs url
 		'image_data': generate_base64(current_baka.image3).decode('utf-8'),
 		'name' : 'BAKAJOHN #' + format(current_num, '03d'),
+		'number' : current_num * 3 + 2,
 		'attributes': [
+			{
+				'trait_type': 'background', 
+				'value': current_baka.type3.partname[5],
+			},
 			{
 				'trait_type': 'body', 
 				'value': current_baka.type3.partname[0],
@@ -240,9 +269,12 @@ for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].typePrev = copy.deepcopy(baka[num_img].type1)
 	baka[num_img].type2.part[0] = baka[num_img].type1.part[1]
 	baka[num_img].type2.part[8] = baka[num_img].type1.part[9]
+	# baka[num_img].type2.part[10] = baka[num_img].type1.part[10]
 	baka[num_img].type2.partname[0] = baka[num_img].type1.partname[0]
 	baka[num_img].type2.partname[4] = baka[num_img].type1.partname[4]	
+	# baka[num_img].type2.partname[5] = baka[num_img].type1.partname[5]	
 	baka[num_img].type2.mode89 = True
+	baka[num_img].type2.special_background = baka[num_img].type1.special_background
 	baka[num_img].image2, baka[num_img].type2 = produce_image(baka[num_img].image2, baka[num_img].type2, baka[num_img].typePrev)
 	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
 	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + 'B' + utils.OUTPUT_IMGTYPE, baka[num_img].image2)
@@ -251,11 +283,14 @@ for num_img in trange(utils.NUM_DISTRIB):
 	baka[num_img].type3.part[2] = baka[num_img].type2.part[2]
 	baka[num_img].type3.part[4] = baka[num_img].type2.part[4]
 	baka[num_img].type3.part[6] = baka[num_img].type2.part[6]
+	# baka[num_img].type3.part[10] = baka[num_img].type2.part[10]
 	baka[num_img].type3.partname[1] = baka[num_img].type2.partname[1]
 	baka[num_img].type3.partname[2] = baka[num_img].type2.partname[2]
 	baka[num_img].type3.partname[3] = baka[num_img].type2.partname[3]
+	# baka[num_img].type3.partname[5] = baka[num_img].type2.partname[5]
 	# baka[num_img].type3.special = False
 	baka[num_img].type3.mode89 = True
+	baka[num_img].type3.special_background = baka[num_img].type2.special_background
 	baka[num_img].image3, baka[num_img].type3 = produce_image(baka[num_img].image3, baka[num_img].type3, baka[num_img].typePrev)
 	# cv.imwrite(utils.OUTPUT_PATH + str(num_img) + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
 	cv.imwrite(utils.OUTPUT_PATH + utils.PROJ_NAME + format(num_img, '03d') + 'C' + utils.OUTPUT_IMGTYPE, baka[num_img].image3)
